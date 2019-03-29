@@ -1,0 +1,169 @@
+{
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Description": "S3 migration",
+    "Parameters": {
+        "EcsClusterName": {
+            "Description": "The ECS Cluster Name",
+            "Type": "String"
+        },
+        "ServiceName": {
+            "Description": "The ECS Service Name",
+            "Type": "String",
+            "Default": "s3-migration"
+        },
+        "Image": {
+            "Description": "The ECS Container Image",
+            "Type": "String"
+        },
+        "PlacementStrategiesType": {
+            "Description": "The type of placement strategy. Can be one of the following values: random, spread, or binpack.",
+            "Type": "String",
+            "Default": "spread"
+        },
+        "PlacementStrategiesField": {
+            "Description": "The field to apply the placement strategy against. For the spread placement strategy, valid values are instanceId (or host, which has the same effect), or any platform or custom attribute that is applied to a container instance, such as attribute:ecs.availability-zone. For the binpack placement strategy, valid values are cpu and memory. For the random placement strategy, this field is not used. ",
+            "Type": "String",
+            "Default": "instanceId"
+        }
+    },
+    "Resources": {
+        "Role": {
+            "Type": "AWS::IAM::Role",
+            "Properties": {
+                "RoleName": "s3-migration-role"
+                "AssumeRolePolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                        {
+                            "Effect": "Allow",
+                            "Principal": {
+                                "Service": [
+                                    "ecs-tasks.amazonaws.com"
+                                ]
+                            },
+                            "Action": [
+                                "sts:AssumeRole"
+                            ]
+                        }
+                    ]
+                },
+                "Path": "/",
+                "Policies": [
+                    {
+                        "PolicyName": "RootPolicy",
+                        "PolicyDocument": {
+                            "Version": "2012-10-17",
+                            "Statement": [
+                                {
+                                    "Effect": "Allow",
+                                    "Action": [
+                                        "s3:*",
+                                        "sqs:*",
+                                        "logs:CreateLogStream",
+                                        "logs:PutLogEvents"
+                                    ],
+                                    "Resource": "*"
+                                }
+                            ]
+                        }
+                    }
+                ]
+            }
+        },
+        "InstanceProfile": {
+            "Type": "AWS::IAM::InstanceProfile",
+            "Properties": {
+                "Path": "/",
+                "Roles": [
+                    {
+                        "Ref": "Role"
+                    }
+                ]
+            }
+        },
+        "Service": {
+            "Type": "AWS::ECS::Service",
+            "Properties": {
+                "Cluster": {
+                    "Ref": "EcsClusterName"
+                },
+                "ServiceName": {
+                    "Ref": "ServiceName"
+                },
+                "DesiredCount": 0,
+                "TaskDefinition": {
+                    "Ref": "TaskDefinition"
+                },
+                "PlacementStrategies": [
+                    {
+                        "Field": {
+                            "Ref": "PlacementStrategiesField"
+                        },
+                        "Type": {
+                            "Ref": "PlacementStrategiesType"
+                        }
+                    }
+                ],
+                "DeploymentConfiguration": {
+                    "MaximumPercent": 200,
+                    "MinimumHealthyPercent": 50
+                }
+            }
+        },
+        "TaskDefinition": {
+            "Type": "AWS::ECS::TaskDefinition",
+            "Properties": {
+                "TaskRoleArn": {
+                    "Ref": "Role"
+                },
+                "ContainerDefinitions": [
+                    {
+                        "Name": {
+                            "Ref": "ServiceName"
+                        },
+                        "Image": {
+                            "Ref": "Image"
+                        },
+                        "Cpu": "100",
+                        "MemoryReservation": "100",
+                        "Essential": true,
+                        "Command": [
+                            "migration",
+                            "executor"
+                        ],
+                        "Environment": [
+                            {
+                                "Name": "COPY_REGION_NAME",
+                                "Value": "cn-northwest-1"
+                            }
+                        ]
+                    }
+                ]
+            }
+        }
+    },
+    "Outputs": {
+        "ECSService": {
+            "Description": "ECSService",
+            "Value": {
+                "Ref": "Service"
+            },
+            "Export": {
+                "Name": {
+                    "Fn::Sub": "${AWS::StackName}-EcsService"
+                }
+            }
+        },
+        "TaskDefinition": {
+            "Description": "TaskDefinition",
+            "Value": {
+                "Ref": "TaskDefinition"
+            },
+            "Export": {
+                "Name": {
+                    "Fn::Sub": "${AWS::StackName}-EcsTaskDefinition"
+                }
+            }
+        }
+    }
+}

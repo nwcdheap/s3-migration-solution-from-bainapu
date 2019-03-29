@@ -1,0 +1,9 @@
+.*
+!.gitignore
+/output
+*.pyc
+__pycache__
+*.log
+/build
+/dist
+*.egg-info

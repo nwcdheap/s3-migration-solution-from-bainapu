@@ -1,0 +1,51 @@
+# AWS configuration
+aws:
+  inventory:
+    # AWS keys to fetch S3 inventory manifest file.
+    # Environment with prefix INVENTORY_ and upper case will override this value.
+    # For example: INVENTORY_PROFILE_NAME will override profile_name in this section.
+    profile_name: "cn-north-1_0225"
+    region_name: cn-north-1
+#    aws_access_key_id: ""
+#    aws_secret_access_key: ""
+  copy:
+    # AWS keys to copy S3 objects, send/receive messages from SQS.
+    # Environment with prefix COPY_ and upper case will override this value.
+    # For example: COPY_PROFILE_NAME will override profile_name in this section.
+#    profile_name: "cn-northwest-1_3977"
+    region_name: cn-northwest-1
+#    aws_access_key_id: ""
+#    aws_secret_access_key: ""
+  # copy_source:
+    # If provided, use this session to copy from source or download source file.
+    # Environment with prefix COPY_SOURCE_ and upper case will override this value.
+    # profile_name: ""
+    # region_name: ""
+    # aws_access_key_id: ""
+    # aws_secret_access_key: ""
+# Migration configuration
+migration:
+  # Batch key number for each message
+  batch_num: 500
+  # Temp directory for download files
+  tmp_dir: tmp
+  # Log level
+  log_level: INFO
+  # Log file path, print to console if not provided
+  log_file: ""
+# SQS queues configuration
+sqs:
+  # Total queues to use
+  queue_num: 5
+  # Queue name pattern, {} will be replaced by format with number, start from 1 to queue_num
+  queue_name_pattern: s3-migration-{:0>2d}
+  # Dead queue name
+  dead_queue_name: s3-migration-dead
+  # The visibility timeout for the queue.
+  visibility_timeout: "1800"
+  # The length of time, in seconds, for which a ReceiveMessage action waits for a message to arrive.
+  receive_message_wait_time: "20"
+  # The length of time, in seconds, for which Amazon SQS retains a message.
+  message_retention_period: "1209600"
+  # Max number of messages for executor to receive, from 1 to 10.
+  max_receive_num: 10
