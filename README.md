@@ -190,4 +190,4 @@ https://docs.aws.amazon.com/vpc/latest/userguide/vpc-endpoints-s3.html
 
 ## An error occurred (InvalidRequest) when calling the CopyObject operation: The specified copy source.
 
-当单个对象大小超过5GB时会有此告警产生。单个对象大于5GB时，应该使用multipart upload API复制文件(https://docs.aws.amazon.com/zh_cn/AmazonS3/latest/API/RESTObjectCOPY.html)，因此本工具会自动切换到使用multipart upload API，您无需理会该告警。
+当单个对象大小超过5GB时会有此告警产生。单个对象大于5GB时，应该使用multipart upload API复制文件(https://docs.aws.amazon.com/zh_cn/AmazonS3/latest/API/RESTObjectCOPY.html). 因此本工具会自动切换到使用multipart upload API，您无需理会该告警。
