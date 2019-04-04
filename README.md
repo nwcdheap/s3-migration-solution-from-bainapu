@@ -4,7 +4,7 @@ AWS S3 Tools
 本工具用于S3桶间的迁移，对于跨区域和跨账户场景同样适用。   
 本工具支持迁移及迁移后的校验。
 
-#免责说明
+#免责说明   
 此方案为patsnap贡献，已在其生产环境中得到验证。但我们仍然无法保证方案的通用性，建议您在测试过程中使用此方案，生产环境使用请自行考虑评估。   
 当您对方案需要进一步的沟通和反馈后，可以联系 nwcd_labs@nwcdcloud.cn 获得更进一步的支持。
 欢迎联系参与方案共建, 也欢迎在 github 项目issue中留言反馈bugs。
@@ -22,7 +22,7 @@ pip install -r requirements.txt
 
 ## 原理架构
 
-!(Picture1.png)
+![](Picture1.png)
 
 
 
@@ -32,7 +32,6 @@ pip install -r requirements.txt
 
 本工具提高了s3 list的效率，并使用SQS队列来提高并发，支持不同的迁移模式并支持迁移过程的校验。
 
-We have tested migration about 200 million objects (about 2 TB) in one day for 500 executors and about 70 million objects (about 7 TB) in six hours for 1000 executors.
 我们通过使用500个executor在一天内完成了2亿个对象（大约2TB)的迁移；通过使用1000个executor在6小时内完成了7千万个对象（大约7TB)的迁移。  
 
 支持如下s3对象的list方法：
@@ -71,7 +70,6 @@ We have tested migration about 200 million objects (about 2 TB) in one day for 5
 
 ### 初始化 SQS 队列
 
-This tool use several queues to avoid a single queue blocked. You can specify how many queues should be used by `sqs.queue_num` in config.yml.
 我们使用多条队列来避免单一队列被阻塞的风险。您可以通过在config.yml中设置`sqs.queue_num`值来指定队列个数。  
 
 创建队列和死信队列：
@@ -108,7 +106,6 @@ ObjectLister和InventoryLister是获取s3对象列表信息的两种方案。前
 | --owner| 以object lister的role操作 |
 | --no-owner|  以与object lister不同的role操作 |
 
-This command send messages to queues that should be processed by executors.
 
 ### 启动executor从消息队列中拉取消息并执行对象复制
 
@@ -146,14 +143,11 @@ pytest
 
 ## 使能S3 inventory
 
-Add inventory configuration in bucket->Management->Inventory tab.
-Select ouput format CSV, and better to enable `Size`, `Last modified date`, `Storage class` and `ETag` in optional fields.
 在bucket->Management->Inventory页面中配置inventory,指定输出为csv格式。我们建议您在选项中enable `Size`, `Last modified date`, `Storage class` 和`ETag`。结果会在您指定的目录下生成文件列表信息和manifest文件。  
 
 
 ## Access denied 和 S3 bucket 策略设置
 
-Because we use the same profile (or key) to get from source bucket and put to target bucket. If the source bucket and target bucket are in different account. You should add bucket policy to the source bucket to allow get object by another account.
 我们默认您使用同样的profile来操作源bucket和目标bucket.如果您的源bucket和目标bucket在不同的aws账户，您需要增加如下的桶策略来执行跨账户复制操作：   
 
 ```
