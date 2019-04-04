@@ -141,12 +141,12 @@ pytest
 
 # 常见问题
 
-## 使能S3 inventory
+### 使能S3 inventory
 
 在bucket->Management->Inventory页面中配置inventory,指定输出为csv格式。我们建议您在选项中设置 `Size`, `Last modified date`, `Storage class` 和`ETag`。结果会在您指定的目录下生成文件列表信息和manifest文件。  
 
 
-## Access denied 和 S3 bucket 策略设置
+### Access denied 和 S3 bucket 策略设置
 
 我们默认您使用相同的profile来操作源bucket和目标bucket.如果您的源bucket和目标bucket在不同的aws账户，您需要增加如下的桶策略来执行跨账户复制操作：   
 
@@ -177,17 +177,17 @@ pytest
 }
 ```
 
-## S3 Endpoints目前不支持跨区域操作请求
+### S3 Endpoints目前不支持跨区域操作请求
 
 方案一: 移除S3 endpoints或者在没有s3 endpoints关联的子网中使用EC2实例。    
 https://docs.aws.amazon.com/vpc/latest/userguide/vpc-endpoints-s3.html
 
 方案二: executor使用下载再上传模式`--mode downup`。这样对于单个大文件可能需要预留比较大的ebs空间。  
 
-## 错误信息：An error occured (SlowDown) when calling the CopyObject operation (reached max retries: 4): Please reduce your request rate.
+### 错误信息：An error occured (SlowDown) when calling the CopyObject operation (reached max retries: 4): Please reduce your request rate.
 
 并发太高导致bucket的copy操作被限速。建议您对单个bucket使用低于1000个的executor可避免此报错发生。
 
-## 错误信息：An error occurred (InvalidRequest) when calling the CopyObject operation: The specified copy source.
+### 错误信息：An error occurred (InvalidRequest) when calling the CopyObject operation: The specified copy source.
 
 当单个对象大小超过5GB时会有此告警产生。单个对象大于5GB时，应该使用multipart upload API复制文件(https://docs.aws.amazon.com/zh_cn/AmazonS3/latest/API/RESTObjectCOPY.html). 因此本工具会自动切换到使用multipart upload API，您无需理会该告警。
