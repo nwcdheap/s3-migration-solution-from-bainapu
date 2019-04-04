@@ -184,10 +184,10 @@ https://docs.aws.amazon.com/vpc/latest/userguide/vpc-endpoints-s3.html
 
 方案二: executor使用下载再上传模式`--mode downup`。这样对于单个大文件可能需要预留比较大的ebs空间。  
 
-## An error occured (SlowDown) when calling the CopyObject operation (reached max retries: 4): Please reduce your request rate.
+## 错误信息：An error occured (SlowDown) when calling the CopyObject operation (reached max retries: 4): Please reduce your request rate.
 
 并发太高导致bucket的copy操作被限速。建议您对单个bucket使用低于1000个的executor可避免此报错发生。
 
-## An error occurred (InvalidRequest) when calling the CopyObject operation: The specified copy source.
+## 错误信息：An error occurred (InvalidRequest) when calling the CopyObject operation: The specified copy source.
 
 当单个对象大小超过5GB时会有此告警产生。单个对象大于5GB时，应该使用multipart upload API复制文件(https://docs.aws.amazon.com/zh_cn/AmazonS3/latest/API/RESTObjectCOPY.html). 因此本工具会自动切换到使用multipart upload API，您无需理会该告警。
