@@ -143,12 +143,12 @@ pytest
 
 ## 使能S3 inventory
 
-在bucket->Management->Inventory页面中配置inventory,指定输出为csv格式。我们建议您在选项中enable `Size`, `Last modified date`, `Storage class` 和`ETag`。结果会在您指定的目录下生成文件列表信息和manifest文件。  
+在bucket->Management->Inventory页面中配置inventory,指定输出为csv格式。我们建议您在选项中设置 `Size`, `Last modified date`, `Storage class` 和`ETag`。结果会在您指定的目录下生成文件列表信息和manifest文件。  
 
 
 ## Access denied 和 S3 bucket 策略设置
 
-我们默认您使用同样的profile来操作源bucket和目标bucket.如果您的源bucket和目标bucket在不同的aws账户，您需要增加如下的桶策略来执行跨账户复制操作：   
+我们默认您使用相同的profile来操作源bucket和目标bucket.如果您的源bucket和目标bucket在不同的aws账户，您需要增加如下的桶策略来执行跨账户复制操作：   
 
 ```
 {
