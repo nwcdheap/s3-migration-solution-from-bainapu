@@ -182,7 +182,7 @@ pytest
 方案一: 移除S3 endpoints或者在没有s3 endpoints关联的子网中使用EC2实例。    
 https://docs.aws.amazon.com/vpc/latest/userguide/vpc-endpoints-s3.html
 
-方案二: The executor use download and upload mode `--mode downup` to download to the EBS and then upload. This requires a big EBS if single object is very large. executor使用下载再上传模式`--mode downup`。这样对于单个大文件可能需要预留比较大的ebs空间。  
+方案二: executor使用下载再上传模式`--mode downup`。这样对于单个大文件可能需要预留比较大的ebs空间。  
 
 ## An error occured (SlowDown) when calling the CopyObject operation (reached max retries: 4): Please reduce your request rate.
 
