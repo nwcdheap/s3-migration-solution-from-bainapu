@@ -5,9 +5,9 @@ AWS S3 Tools
 本工具支持迁移及迁移后的校验。
 
 # 免责说明   
-此方案为Bainapu贡献，已在其生产环境中得到验证。但我们仍然无法保证方案的通用性，建议您在测试过程中使用此方案，生产环境使用请自行考虑评估。   
-当您对方案需要进一步的沟通和反馈后，可以联系 nwcd_labs@nwcdcloud.cn 获得更进一步的支持。
-欢迎联系参与方案共建, 也欢迎在 github 项目issue中留言反馈bugs。
+此方案为百纳谱（www.bainapu.com）贡献，已在其生产环境中得到验证,感谢百纳谱对nwcdlabs开源项目的支持。   
+当您对方案需要进一步的沟通和反馈后，可以联系 nwcd_labs@nwcdcloud.cn 获得更进一步的支持。欢迎联系参与方案共建, 也欢迎在 github 项目issue中留言反馈bugs。     
+我们无法保证s3大规模迁移方案在任何场景的通用性，因此建议您在测试过程中使用此方案，生产环境使用请自行考虑评估。   
 
 
 # 依赖包
@@ -23,6 +23,15 @@ pip install -r requirements.txt
 ## 原理架构
 
 ![](Picture1.png)
+
+图中虚线为message path： 首先通过s3 inventory或S3 list的方式列出源桶中所有需要迁移的s3对象并将对象信息发往队列；executors从队列中获得需要迁移的对象信息。  
+图中实现为object copy path: executors从消息队列中获取到对象的信息后，对每个对象执行复制操作。复制操作有两种方式可选：紫色为直接使用s3 copy的方式；绿色是先将对象下载到本地，再上传到目标桶的方式。   
+
+图中橙色的executors的执行方式两种，一种是在多个EC2虚机上直接执行python进程的方式；另一种是将python进程制作成镜像（通过本项目dockerfile生成），再通过AWS ECS服务拉起多个容器并行执行。
+
+
+
+
 
 
 
@@ -67,6 +76,8 @@ pip install -r requirements.txt
 使用`--env-file` or `-e`指定.env文件  
 
 ## 使用
+
+如无特殊说明，所有命令默认在ec2上通过执行python程序的方式进行。
 
 ### 初始化 SQS 队列
 
@@ -130,7 +141,7 @@ python s3_tools.py  executor
 | --max-receive-num | 每个executor每次最多能取的消息数量 |
 
 
-这条命令可以在ECS中运行以获得高并发性。使用本项目源码中的Dockerfile来构建docker镜像。 使用本项目源码中的templates/cloudformation.template模板来创建任务。     
+除通过在多个EC2上并行执行该命令的默认方式外，这条命令也可以在ECS中运行以获得高并发性。使用本项目源码中的Dockerfile来构建docker镜像。 使用本项目源码中的templates/cloudformation.template模板来创建任务。cloudformation是一种快速搭建aws资源的方式：  https://amazonaws-china.com/cn/cloudformation/aws-cloudformation-templates/      
 
 # 测试
 
