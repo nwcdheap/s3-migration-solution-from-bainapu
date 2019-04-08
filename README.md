@@ -5,8 +5,8 @@ AWS S3 Tools
 本工具支持迁移及迁移后的校验。
 
 # 免责说明   
-此方案为百纳谱（www.bainapu.com）贡献，已在其生产环境中得到验证,感谢百纳谱对nwcdlabs开源项目的支持。   
-当您对方案需要进一步的沟通和反馈后，可以联系 nwcd_labs@nwcdcloud.cn 获得更进一步的支持。欢迎联系参与方案共建, 也欢迎在 github 项目issue中留言反馈bugs。     
+此方案为[百纳谱](www.bainapu.com)贡献，已在其生产环境中得到验证,感谢百纳谱对nwcdlabs开源项目的支持。   
+当您对方案需要进一步的沟通和反馈，可以联系 nwcd_labs@nwcdcloud.cn 获得更进一步的支持。欢迎联系参与方案共建, 也欢迎在 github 项目issue中留言反馈bugs。     
 我们无法保证s3大规模迁移方案在任何场景的通用性，因此建议您在测试过程中使用此方案，生产环境使用请自行考虑评估。   
 
 
@@ -24,8 +24,9 @@ pip install -r requirements.txt
 
 ![](Picture1.png)
 
-图中虚线为message path： 首先通过s3 inventory或S3 list的方式列出源桶中所有需要迁移的s3对象并将对象信息发往队列；executors从队列中获得需要迁移的对象信息。  
-图中实现为object copy path: executors从消息队列中获取到对象的信息后，对每个对象执行复制操作。复制操作有两种方式可选：紫色为直接使用s3 copy的方式；绿色是先将对象下载到本地，再上传到目标桶的方式。   
+图中虚线为message path： 首先通过s3 inventory或S3 list的方式列出源桶中所有需要迁移的s3对象并将对象信息发往队列；executors从队列中获得需要迁移的对象信息。
+
+图中实线为object copy path: executors从消息队列中获取到对象的信息后，对每个对象执行复制操作。复制操作有两种方式可选：紫色为直接使用s3 copy的方式；绿色是先将对象下载到本地，再上传到目标桶的方式。   
 
 图中橙色的executors的执行方式两种，一种是在多个EC2虚机上直接执行python进程的方式；另一种是将python进程制作成镜像（通过本项目dockerfile生成），再通过AWS ECS服务拉起多个容器并行执行。
 
